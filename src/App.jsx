@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import './App.css'; // Import the CSS file we just created
+import './App.css'; 
 
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
@@ -10,8 +10,9 @@ function App() {
   const [command, setCommand] = useState('');
   const [outputLog, setOutputLog] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
-  // Admin State
   const [newRule, setNewRule] = useState({ pattern: '', action: 'block', description: '' });
+  const [newUserForm, setNewUserForm] = useState({ username: '', role: 'member' });
+  const [createdUserKey, setCreatedUserKey] = useState(null);
 
   // --- AUTHENTICATION ---
   const login = async () => {
@@ -86,6 +87,20 @@ function App() {
     }
   };
 
+  const createUser = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(`${API_URL}/users`, newUserForm, {
+      headers: { 'x-api-key': apiKey }
+    });
+    // Save the key to state to display it
+    setCreatedUserKey({ username: res.data.username, key: res.data.api_key });
+    setNewUserForm({ username: '', role: 'member' }); // Reset form
+  } catch (err) {
+    alert(err.response?.data?.detail || "Failed to create user");
+  }
+};
+
   // --- VIEW: LOGIN SCREEN ---
   if (!user) {
     return (
@@ -157,7 +172,6 @@ function App() {
         </form>
       </div>
 
-      {/* RIGHT: ADMIN PANEL (Conditional) */}
       {/* RIGHT: ADMIN PANEL */}
       {user.role === 'admin' && (
         <div className="admin-panel">
@@ -189,7 +203,51 @@ function App() {
               <button className="save-btn">DEPLOY RULE</button>
             </form>
           </div>
+          {/* Section 0: User Management (New Feature) */}
+          <div style={{marginBottom: '30px', paddingBottom: '20px', borderBottom: '1px solid #30363d'}}>
+            <h3 className="stat-label" style={{marginBottom: '10px', color: '#58a6ff'}}>RECRUIT NEW AGENT</h3>
+            
+            {/* If a user was just created, show their key! */}
+            {createdUserKey && (
+              <div style={{background: '#1f2937', padding: '15px', border: '1px solid #3fb950', marginBottom: '15px', borderRadius: '4px'}}>
+                <p style={{color: '#3fb950', fontWeight: 'bold', marginBottom: '5px'}}>SUCCESS: USER CREATED</p>
+                <p style={{fontSize: '0.9rem'}}>Username: <span style={{color: 'white'}}>{createdUserKey.username}</span></p>
+                <p style={{fontSize: '0.9rem', marginTop: '5px'}}>API Key (Copy now!):</p>
+                <div style={{background: 'black', padding: '8px', fontFamily: 'monospace', color: '#d29922', border: '1px dashed #555'}}>
+                  {createdUserKey.key}
+                </div>
+                <button 
+                  onClick={() => setCreatedUserKey(null)}
+                  style={{marginTop: '10px', fontSize: '0.8rem', textDecoration: 'underline', color: '#8b949e', background: 'none', border: 'none', cursor: 'pointer'}}
+                >
+                  Close
+                </button>
+              </div>
+            )}
 
+            {/* The Create Form */}
+            <form onSubmit={createUser} className="rule-form">
+              <input 
+                type="text" placeholder="Username" required
+                className="admin-input"
+                value={newUserForm.username} 
+                onChange={(e) => setNewUserForm({...newUserForm, username: e.target.value})}
+              />
+              <div style={{display:'flex', gap:'5px'}}>
+                <select 
+                  className="admin-input" style={{flex:1}}
+                  value={newUserForm.role} 
+                  onChange={(e) => setNewUserForm({...newUserForm, role: e.target.value})}
+                >
+                  <option value="member">MEMBER</option>
+                  <option value="admin">ADMIN</option>
+                </select>
+                <button className="save-btn" style={{flex:1, background: '#1f6feb', color: 'white'}}>
+                  CREATE USER
+                </button>
+              </div>
+            </form>
+          </div>
           {/* Section 2: Audit Logs */}
           <div style={{borderTop: '1px solid #30363d', paddingTop: '20px'}}>
             <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'10px'}}>
@@ -202,7 +260,7 @@ function App() {
                 <thead>
                   <tr style={{textAlign:'left', color:'#8b949e', borderBottom: '1px solid #30363d'}}>
                     <th style={{padding:'8px'}}>TIME</th>
-                    <th style={{padding:'8px', color: '#58a6ff'}}>USER</th> {/* New Column */}
+                    <th style={{padding:'8px', color: '#58a6ff'}}>USER</th> 
                     <th style={{padding:'8px'}}>CMD</th>
                     <th style={{padding:'8px'}}>STATUS</th>
                   </tr>
@@ -214,7 +272,7 @@ function App() {
                         {new Date(log.timestamp).toLocaleTimeString()}
                       </td>
                       <td style={{padding:'8px', fontWeight:'bold', color:'#e2e8f0'}}>
-                        {log.username} {/* Display the Username */}
+                        {log.username} 
                       </td>
                       <td style={{padding:'8px', fontFamily:'monospace', color:'#d29922'}}>
                         {log.command}

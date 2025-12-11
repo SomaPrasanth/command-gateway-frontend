@@ -6,12 +6,12 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #0d1117; /* Dark GitHub background */
-  color: #c9d1d9; /* Light gray text */
-  font-family: 'Courier New', Courier, monospace; /* Terminal Font */
+  background-color: #0d1117; 
+  color: #c9d1d9; 
+  font-family: 'Courier New', Courier, monospace; 
 }
 
-/* LAYOUT CONTAINERS */
+
 .app-container {
   display: flex;
   min-height: 100vh;
@@ -25,7 +25,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #2ea043; /* Matrix Green */
+  color: #2ea043; 
 }
 
 .login-box {
@@ -47,7 +47,7 @@ body {
 
 .header-stats {
   background-color: #161b22;
-  border-left: 5px solid #58a6ff; /* Blue accent */
+  border-left: 5px solid #58a6ff; 
   padding: 15px;
   border-radius: 4px;
   display: flex;
@@ -92,9 +92,9 @@ body {
 
 .log-entry { margin-bottom: 8px; }
 .log-user { color: #f0f6fc; font-weight: bold; }
-.log-success { color: #3fb950; } /* Green */
-.log-error { color: #f85149; }   /* Red */
-.log-info { color: #58a6ff; }    /* Blue */
+.log-success { color: #3fb950; }
+.log-error { color: #f85149; }   
+.log-info { color: #58a6ff; }    
 
 /* INPUT FORM */
 .command-form {
